@@ -82,7 +82,7 @@ export function FullScreenPlayer() {
         <ProgressBar duration={song.durationSec} />
         <PlayerControls size="lg" />
         <div className="flex items-center justify-between">
-          <VolumeControl />
+          <VolumeControl expandOnHover={false} />
           <Button
             variant={showLyrics ? "secondary" : "ghost"}
             size="sm"
