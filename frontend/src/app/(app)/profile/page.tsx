@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ImagePlus, Pencil, Radio, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,6 +40,7 @@ function EditProfileDialog({ user }: { user: User }) {
   const [birthDate, setBirthDate] = useState(user.birthDate ?? "");
 
   const canChangeAvatar = TIERS[user.subscriptionTier].canUploadAvatar;
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   function save(event: React.FormEvent) {
     event.preventDefault();
@@ -48,9 +49,20 @@ function EditProfileDialog({ user }: { user: User }) {
     toast.success("نمایه به‌روزرسانی شد");
   }
 
-  function shuffleAvatar() {
-    updateUser(user.id, { avatarSeed: Math.random().toString(36).slice(2) });
-    toast.success("تصویر نمایه تغییر کرد");
+  function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("لطفاً یک فایل تصویری انتخاب کنید");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateUser(user.id, { avatarUrl: reader.result as string });
+      toast.success("تصویر نمایه تغییر کرد");
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
   }
 
   return (
@@ -72,10 +84,23 @@ function EditProfileDialog({ user }: { user: User }) {
             className="size-16"
           />
           {canChangeAvatar ? (
-            <Button variant="outline" size="sm" onClick={shuffleAvatar}>
-              <ImagePlus />
-              تغییر تصویر
-            </Button>
+            <>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => avatarInputRef.current?.click()}
+              >
+                <ImagePlus />
+                تغییر تصویر
+              </Button>
+            </>
           ) : (
             <Tooltip>
               <TooltipTrigger
