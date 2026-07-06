@@ -82,7 +82,10 @@ export function PlayerBar() {
 
         {/* Controls + progress */}
         <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-1">
-          <PlayerControls />
+          <div className="flex items-center gap-3">
+            <PlayerControls />
+            <VolumeControl />
+          </div>
           <ProgressBar duration={song.durationSec} className="w-full" />
         </div>
 
@@ -93,7 +96,6 @@ export function PlayerBar() {
           ) : null}
           <LyricsSheet title={song.title} lyrics={song.lyrics} />
           <QueueSheet />
-          <VolumeControl className="hidden lg:flex" />
         </div>
       </div>
 
